@@ -8,7 +8,7 @@ if (!directory) {
   process.exit(1);
 }
 
-const output = fs.createWriteStream(`${directory}.zip`);
+const output = fs.createWriteStream(`${directory}\\..\\.zip`);
 const archive = archiver('zip', { zlib: { level: 9 } });
 
 archive.pipe(output);
@@ -17,7 +17,7 @@ archive.finalize();
 
 
 output.on('close', () => {
-  process.send(`${directory}.zip`);
+  process.send(`${directory}\..\\.zip`);
   process.exit(0);
 });
 
