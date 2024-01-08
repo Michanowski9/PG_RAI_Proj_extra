@@ -1,7 +1,8 @@
 # PG_RAI_Proj_extra
 
-dependencies:<br>
+prepare server and install dependencies:<br>
 ```
+npm init -y
 npm install express archiver
 ```
 
