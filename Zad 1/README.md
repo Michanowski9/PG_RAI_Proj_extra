@@ -19,7 +19,7 @@ to print all cars:
 GET localhost:300/cars
 
 to print one car:
-GET localhost:300/cars/<number>
+GET localhost:300/cars/number
 
 to add car:
 POST http://localhost:3000/cars
@@ -34,7 +34,7 @@ POST http://localhost:3000/cars
 ```
 
 to update car:
-PUT http://localhost:3000/cars/<number>
+PUT http://localhost:3000/cars/number
 
 ```
 {
@@ -44,6 +44,6 @@ PUT http://localhost:3000/cars/<number>
 ```
 
 to delete car:
-DELETE http://localhost:3000/cars/<number>
+DELETE http://localhost:3000/cars/number
 
-<number> is first filed in struct
+number is first filed in struct
