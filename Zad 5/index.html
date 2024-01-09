@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Example</title>
+</head>
+<body>
+
+  <h1>WebSocket Example</h1>
+  <input type="text" id="messageInput" placeholder="Wpisz wiadomość">
+  <button onclick="sendMessage()">Wyślij</button>
+  <div id="output"></div>
+
+  <script>
+    const socket = new WebSocket('ws://localhost:3000');
+
+    // Obsługa nawiązania połączenia
+    socket.addEventListener('open', (event) => {
+      console.log('Połączono z serwerem WebSocket.');
+    });
+
+    // Obsługa otrzymanych wiadomości
+    socket.addEventListener('message', (event) => {
+      const output = document.getElementById('output');
+      output.innerHTML += `<p>Otrzymano: ${event.data}</p>`;
+    });
+
+    // Obsługa zamknięcia połączenia
+    socket.addEventListener('close', (event) => {
+      console.log('Połączenie z serwerem zakończone.');
+    });
+
+    // Funkcja do wysyłania wiadomości
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value;
+
+      // Wysłanie wiadomości do serwera
+      socket.send(message);
+
+      // Wyczyszczenie pola wejściowego
+      input.value = '';
+    }
+  </script>
+</body>
+</html>
