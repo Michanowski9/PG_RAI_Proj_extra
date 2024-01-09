@@ -1,7 +1,10 @@
 "use strict";
 
+// Importuje moduł Express, który jest frameworkiem dla aplikacji webowych w Node.js
 import express from "express";
+// Importuje moduł fs/promises, który zapewnia asynchroniczne operacje na plikach
 import fs from "fs/promises";
+// Importuje moduł path, który udostępnia narzędzia do obsługi ścieżek plików
 import path from "path";
 
 export default class Car {
@@ -44,133 +47,147 @@ export default class Car {
     }
 }
 
+// Inicjalizuje aplikację Express
 const app = express();
+// Ścieżka do katalogu, gdzie będą przechowywane dane o samochodach
 const dataDirectory = "./data/cars";
 
+// Ustawia middleware do obsługi danych w formacie JSON
 app.use(express.json());
 
 // Endpoint do pobierania listy wszystkich samochodów
 app.get("/cars", async (req, res) => {
     try {
-        // Odczytaj nazwy plików z katalogu danych
+        // Odczytuje nazwy plików samochodów z katalogu danych
         const carFiles = await fs.readdir(dataDirectory);
 
-        // Odczytaj dane o każdym samochodzie z pliku i zwróć listę
+        // Odczytuje dane o każdym samochodzie z pliku i zwraca listę samochodów
         const cars = await Promise.all(
             carFiles.map(async (carFile) => {
+                // Tworzy pełną ścieżkę do pliku samochodu
                 const carFilePath = path.join(dataDirectory, carFile);
+                // Odczytuje zawartość pliku (dane o samochodzie) jako ciąg znaków
                 const carData = await fs.readFile(carFilePath, "utf-8");
+                // Parsuje dane z formatu JSON na obiekt reprezentujący samochód
                 return JSON.parse(carData);
             })
         );
 
-        // Odpowiedź z listą samochodów w formacie JSON
+        // Odpowiada klientowi z listą samochodów w formacie JSON
         res.json(cars);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
+        // Obsługuje błędy, informuje o błędzie i zwraca status 500
+        console.error("Błąd podczas pobierania listy samochodów:", error);
+        res.status(500).json({ error: "Wewnętrzny błąd serwera" });
     }
 });
 
 // Endpoint do dodawania nowego samochodu
 app.post("/cars", async (req, res) => {
     try {
-        // Odczytaj dane nowego samochodu z ciała żądania
+        // Odczytuje dane nowego samochodu z ciała żądania
         const { number, mileage, passangerCount, pricePerDay } = req.body;
+        // Tworzy nowy obiekt samochodu na podstawie przekazanych danych
         const car = new Car(number, mileage, passangerCount, pricePerDay);
 
-        // Ścieżka do pliku z danymi o samochodzie
+        // Łączy ścieżkę do pliku, w którym będą przechowywane dane o nowym samochodzie
         const carFilePath = path.join(dataDirectory, `${car.number}-${car.number}.json`);
 
-        // Zapisz dane nowego samochodu do pliku
+        // Zapisuje dane nowego samochodu do pliku w formacie JSON
         await fs.writeFile(carFilePath, JSON.stringify(car));
 
-        // Odpowiedź potwierdzająca utworzenie samochodu
-        res.status(201).json({ message: "Car created successfully" });
+        // Odpowiada klientowi informacją o pomyślnym utworzeniu samochodu
+        res.status(201).json({ message: "Samochód utworzony pomyślnie" });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
+        // Obsługuje błędy, informuje o błędzie i zwraca status 500
+        console.error("Błąd podczas dodawania nowego samochodu:", error);
+        res.status(500).json({ error: "Wewnętrzny błąd serwera" });
     }
 });
 
 // Endpoint do pobierania informacji o samochodzie po numerze
 app.get("/cars/:number", async (req, res) => {
     try {
-        // Odczytaj numer samochodu z parametru żądania
+        // Odczytuje numer samochodu z parametru żądania
         const carNumber = req.params.number;
 
-        // Ścieżka do pliku z danymi o samochodzie
+        // Łączy ścieżkę do pliku z danymi o samochodzie
         const carFilePath = path.join(dataDirectory, `${carNumber}-${carNumber}.json`);
 
-        // Odczytaj dane o samochodzie z pliku
+        // Odczytuje dane o samochodzie z pliku
         const carData = await fs.readFile(carFilePath, "utf-8");
+        // Parsuje dane z formatu JSON na obiekt reprezentujący samochód
         const car = JSON.parse(carData);
 
-        // Odpowiedź z danymi o samochodzie w formacie JSON
+        // Odpowiada klientowi danymi o samochodzie w formacie JSON
         res.json(car);
     } catch (error) {
-        console.error(error);
-        res.status(404).json({ error: "Car not found" });
+        // Obsługuje błędy, informuje o błędzie i zwraca status 404
+        console.error("Błąd podczas pobierania informacji o samochodzie:", error);
+        res.status(404).json({ error: "Samochód nie znaleziony" });
     }
 });
 
 // Endpoint do aktualizacji informacji o samochodzie
 app.put("/cars/:number", async (req, res) => {
     try {
-        // Odczytaj numer samochodu z parametru żądania
+        // Odczytuje numer samochodu z parametru żądania
         const carNumber = req.params.number;
 
-        // Ścieżka do pliku z danymi o samochodzie
+        // Łączy ścieżkę do pliku z danymi o samochodzie
         const carFilePath = path.join(dataDirectory, `${carNumber}-${carNumber}.json`);
 
-        // Odczytaj dane o samochodzie z pliku
+        // Odczytuje dane o samochodzie z pliku
         const carData = await fs.readFile(carFilePath, "utf-8");
+        // Parsuje dane z formatu JSON na obiekt reprezentujący samochód
         const existingCar = JSON.parse(carData);
 
-        // Odczytaj dane do aktualizacji z ciała żądania
+        // Odczytuje dane do aktualizacji z ciała żądania
         const { number, mileage, passangerCount, pricePerDay } = req.body;
 
-        // Aktualizuj dane samochodu (jeśli podane)
+        // Aktualizuje dane samochodu (jeśli podane)
         existingCar.number = number || existingCar.number;
         existingCar.mileage = mileage || existingCar.mileage;
         existingCar.passangerCount = passangerCount || existingCar.passangerCount;
         existingCar.pricePerDay = pricePerDay || existingCar.pricePerDay;
 
-        // Zapisz zaktualizowane dane do pliku
+        // Zapisuje zaktualizowane dane do pliku w formacie JSON
         await fs.writeFile(carFilePath, JSON.stringify(existingCar));
 
-        // Odpowiedź potwierdzająca aktualizację samochodu
-        res.json({ message: "Car updated successfully" });
+        // Odpowiada klientowi informacją o pomyślnej aktualizacji samochodu
+        res.json({ message: "Samochód zaktualizowany pomyślnie" });
     } catch (error) {
-        console.error(error);
-        res.status(404).json({ error: "Car not found" });
+        // Obsługuje błędy, informuje o błędzie i zwraca status 404
+        console.error("Błąd podczas aktualizacji informacji o samochodzie:", error);
+        res.status(404).json({ error: "Samochód nie znaleziony" });
     }
 });
 
 // Endpoint do usuwania samochodu
 app.delete("/cars/:number", async (req, res) => {
     try {
-        // Odczytaj numer samochodu z parametru żądania
+        // Odczytuje numer samochodu z parametru żądania
         const carNumber = req.params.number;
 
-        // Ścieżka do pliku z danymi o samochodzie
+        // Łączy ścieżkę do pliku z danymi o samochodzie
         const carFilePath = path.join(dataDirectory, `${carNumber}-${carNumber}.json`);
 
-        // Usuń plik z danymi o samochodzie
+        // Usuwa plik z danymi o samochodzie
         await fs.unlink(carFilePath);
 
-        // Odpowiedź potwierdzająca usunięcie samochodu
-        res.json({ message: "Car deleted successfully" });
+        // Odpowiada klientowi informacją o pomyślnym usunięciu samochodu
+        res.json({ message: "Samochód usunięty pomyślnie" });
     } catch (error) {
-        console.error(error);
-        res.status(404).json({ error: "Car not found" });
+        // Obsługuje błędy, informuje o błędzie i zwraca status 404
+        console.error("Błąd podczas usuwania samochodu:", error);
+        res.status(404).json({ error: "Samochód nie znaleziony" });
     }
 });
 
-// Określenie portu, na którym serwer będzie nasłuchiwał
-const port = process.env.PORT || 3000;
+// Określa port, na którym serwer będzie nasłuchiwał
+const port = 3000;
 
-// Uruchomienie serwera na określonym porcie
+// Uruchamia serwer na określonym porcie
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(`Serwer działa na porcie ${port}`);
 });
