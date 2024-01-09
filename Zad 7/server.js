@@ -49,7 +49,7 @@ app.get('/profile', (req, res) => {
   }
   res.send(`<h1>Profile</h1>
     <p>Welcome, ${req.user.displayName}!</p>
-    <p>Your Google ID: ${req.user.googleId}</p>
+    <p>Google ID: ${req.user.googleId}</p>
     <p><a href="/logout">Logout</a></p>`);
 });
 
@@ -57,7 +57,7 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-const port = process.env.PORT || 3000;
+const port = 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
