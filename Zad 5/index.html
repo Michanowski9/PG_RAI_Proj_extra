@@ -13,26 +13,26 @@
   <div id="output"></div>
 
   <script>
-    const socket = new WebSocket('ws://localhost:3000');
+    const socket = new WebSocket('ws://localhost:3000'); // Tworzy obiekt WebSocket, który łączy się z serwerem WebSocket na porcie 3000 lokalnego hosta.
 
     // Obsługa nawiązania połączenia
-    socket.addEventListener('open', (event) => {
+    socket.addEventListener('open', (event) => { // Nasłuchuje na zdarzenie nawiązania połączenia i wypisuje informację na konsoli.
       console.log('Połączono z serwerem WebSocket.');
     });
 
     // Obsługa otrzymanych wiadomości
-    socket.addEventListener('message', (event) => {
+    socket.addEventListener('message', (event) => { // Nasłuchuje na zdarzenie otrzymania wiadomości od serwera i wstawia ją do elementu HTML z identyfikatorem "output".
       const output = document.getElementById('output');
       output.innerHTML += `<p>Otrzymano: ${event.data}</p>`;
     });
 
     // Obsługa zamknięcia połączenia
-    socket.addEventListener('close', (event) => {
+    socket.addEventListener('close', (event) => { // Nasłuchuje na zdarzenie zamknięcia połączenia i wypisuje informację na konsoli.
       console.log('Połączenie z serwerem zakończone.');
     });
 
     // Funkcja do wysyłania wiadomości
-    function sendMessage() {
+    function sendMessage() { // Funkcja, która pobiera wartość z pola wejściowego, wysyła ją do serwera za pomocą WebSocket i czyści pole wejściowe.
       const input = document.getElementById('messageInput');
       const message = input.value;
 
